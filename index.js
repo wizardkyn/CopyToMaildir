@@ -28,8 +28,8 @@ exports.handler = function(event, context, callback) {
     var sesNotification = event.Records[0].ses;
     console.log("SES Notification:\n", JSON.stringify(sesNotification, null, 2));
     
-  	// Retrieve the email from your bucket
-  	s3.getObject({
+    // Retrieve the email from your bucket
+    s3.getObject({
           Bucket: bucketName,
           Key: sesNotification.mail.messageId
       }, function(err, data) {
@@ -39,29 +39,29 @@ exports.handler = function(event, context, callback) {
           } else {
               console.log("Raw email:\n" + data.Body);
 
-							var conn = new Client();
-							conn.on('ready', function() {
-							    conn.sftp(function(err, sftp) {
-							        if (err) throw err;
-							        console.log( "will create file in : " + remotePathToList + sesNotification.mail.messageId);
-							        
-							        var readStream = bufferToStream(data.Body);
-							        var writeStream = sftp.createWriteStream(remotePathToList + sesNotification.mail.messageId);
-							
-							        writeStream.on('close',function () {
-							            console.log( "- file transferred succesfully" );
-							        });
-							
-							        writeStream.on('end', function () {
-							            console.log( "sftp connection closed" );
-							            conn.close();
-							        });
+              var conn = new Client();
+              conn.on('ready', function() {
+                  conn.sftp(function(err, sftp) {
+                      if (err) throw err;
+                      console.log( "will create file in : " + remotePathToList + sesNotification.mail.messageId);
+                      
+                      var readStream = bufferToStream(data.Body);
+                      var writeStream = sftp.createWriteStream(remotePathToList + sesNotification.mail.messageId);
+              
+                      writeStream.on('close',function () {
+                          console.log( "- file transferred succesfully" );
+                      });
+              
+                      writeStream.on('end', function () {
+                          console.log( "sftp connection closed" );
+                          conn.close();
+                      });
 
-							        readStream.pipe(writeStream);
-							
-							    });
-							}).connect(connSettings);
-							
+                      readStream.pipe(writeStream);
+              
+                  });
+              }).connect(connSettings);
+              
               callback(null, null);
           }
       });
