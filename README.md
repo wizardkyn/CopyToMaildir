@@ -2,7 +2,7 @@
 Received SES mail message is stored in S3 bucket.<br>
 Lambda Javascript function upload this file to remote Dovecot Maildir of the user<br>
 
-Description : http://blog.naver.com/wizardkyn/220670022848
+Description : http://blog.naver.com/wizardkyn/221098914698
 
 # Dependencies
 aws-sdk<br>
